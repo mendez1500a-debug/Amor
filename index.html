@@ -427,16 +427,18 @@
         const bgVideo = document.getElementById('bgVideo');
 
         function startExperience() {
+            // Se oculta la pantalla de inmediato al hacer clic para dar respuesta instantánea
+            const overlay = document.getElementById('welcomeOverlay');
+            overlay.style.opacity = '0';
+            setTimeout(() => {
+                overlay.remove();
+            }, 800);
+
+            // Reproducción en segundo plano del video/audio
             bgVideo.volume = 1.0;
             bgVideo.muted = false;
-            bgVideo.play().then(() => {
-                const overlay = document.getElementById('welcomeOverlay');
-                overlay.style.opacity = '0';
-                setTimeout(() => {
-                    overlay.remove();
-                }, 800);
-            }).catch(err => {
-                console.log("Error al reproducir audio:", err);
+            bgVideo.play().catch(err => {
+                console.log("Reproducción automática limitada por el navegador:", err);
             });
         }
 
