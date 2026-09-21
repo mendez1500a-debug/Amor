@@ -147,9 +147,10 @@
             50% { transform: translateY(-6px) rotate(2deg); }
         }
 
+        /* --- RAMOS (Diseño Horizontal Exacto) --- */
         .floating-bouquet {
             position: absolute;
-            width: 48px;
+            width: 50px;
             height: auto;
             z-index: 5;
             pointer-events: none;
@@ -163,9 +164,18 @@
             100% { transform: translate(-4px, 8px) scale(0.97) rotate(-3deg); }
         }
 
+        .bouquet-1 { top: 35%; left: 30%; }
+        .bouquet-2 { top: 48%; left: 16%; }
+        .bouquet-3 { top: 62%; left: 17%; }
+        .bouquet-5 { top: 35%; right: 30%; }
+        .bouquet-6 { top: 48%; right: 16%; }
+        .bouquet-7 { top: 62%; right: 17%; }
+        .bouquet-8 { top: 48%; left: 6%; }
+        .bouquet-9 { top: 48%; right: 6%; }
+
         .poetry-container {
             position: absolute;
-            bottom: 25px;
+            bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
             z-index: 20;
@@ -209,16 +219,17 @@
             pointer-events: none;
         }
 
+        /* --- SOBRES (Diseño Horizontal Exacto) --- */
         .love-envelope {
             position: absolute;
-            width: 100px;
-            padding: 6px;
+            width: 105px;
+            padding: 7px;
             background: rgba(30, 25, 5, 0.85);
             border: 2px solid #ffe600;
             border-radius: 12px;
             color: #fffacd;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            font-size: 0.75rem;
+            font-size: 0.78rem;
             font-weight: bold;
             text-align: center;
             box-shadow: 0 0 15px rgba(255, 230, 0, 0.3);
@@ -228,6 +239,13 @@
             transition: all 0.3s ease;
             animation: bubbleFloat 7s ease-in-out infinite alternate;
         }
+
+        .env-1 { top: 35%; left: 40%; animation-delay: 0s; }
+        .env-2 { top: 57%; left: 30%; animation-delay: 1.5s; }
+        .env-3 { top: 76%; left: 42%; animation-delay: 1s; }
+        .env-4 { top: 35%; right: 40%; animation-delay: 0.5s; }
+        .env-5 { top: 57%; right: 30%; animation-delay: 2s; }
+        .env-6 { top: 76%; right: 42%; animation-delay: 1.2s; }
 
         .love-envelope:hover {
             transform: scale(1.1);
@@ -244,55 +262,8 @@
 
         @keyframes bubbleFloat {
             0% { transform: translate(0, 0) scale(1); }
-            50% { transform: translate(0, -8px) scale(1.03); }
-            100% { transform: translate(0, 8px) scale(0.97); }
-        }
-
-        /* ==========================================================
-           MODO HORIZONTAL (Pantallas anchas / Laptops / Tablets acostadas)
-           ================================================---------- */
-        @media (orientation: landscape) {
-            .env-1 { top: 20%; left: 33%; }
-            .env-2 { top: 46%; left: 22%; }
-            .env-3 { top: 72%; left: 34%; }
-            .env-4 { top: 20%; right: 33%; }
-            .env-5 { top: 46%; right: 22%; }
-            .env-6 { top: 72%; right: 34%; }
-
-            .bouquet-1 { top: 15%; left: 21%; }
-            .bouquet-2 { top: 46%; left: 9%; }
-            .bouquet-3 { top: 78%; left: 22%; }
-            .bouquet-5 { top: 15%; right: 21%; }
-            .bouquet-6 { top: 46%; right: 9%; }
-            .bouquet-7 { top: 78%; right: 22%; }
-            .bouquet-8 { top: 31%; left: 8%; }
-            .bouquet-9 { top: 31%; right: 8%; }
-        }
-
-        /* ==========================================================
-           MODO VERTICAL (Teléfonos parados - Altura mayor que anchura)
-           ================================================---------- */
-        @media (orientation: portrait) {
-            /* Sobres distribuidos arriba y abajo de la luna central */
-            .env-1 { top: 18%; left: 18%; }
-            .env-2 { top: 18%; right: 18%; }
-            .env-3 { top: 41%; left: 8%; }
-            .env-4 { top: 41%; right: 8%; }
-            .env-5 { top: 67%; left: 18%; }
-            .env-6 { top: 67%; right: 18%; }
-
-            /* Ramos distribuidos en los espacios vacíos */
-            .bouquet-1 { top: 10%; left: 8%; }
-            .bouquet-2 { top: 10%; right: 8%; }
-            .bouquet-3 { top: 30%; left: 4%; }
-            .bouquet-5 { top: 30%; right: 4%; }
-            .bouquet-6 { top: 55%; left: 4%; }
-            .bouquet-7 { top: 55%; right: 4%; }
-            .bouquet-8 { top: 78%; left: 10%; }
-            .bouquet-9 { top: 78%; right: 10%; }
-            
-            .corner-bear { width: 60px; }
-            .main-title { font-size: 1rem; top: 12px; }
+            50% { transform: translate(0, -10px) scale(1.03); }
+            100% { transform: translate(0, 10px) scale(0.97); }
         }
 
         .modal-overlay {
@@ -399,7 +370,7 @@
     <div id="welcomeOverlay">
         <div class="welcome-card">
             <h2>Hola, Mi Amor 🌻💛</h2>
-            <p>Toca el botón para abrir tu sorpresa.</p>
+            <p>Gira tu teléfono en horizontal, toca el botón y abre tu sorpresa.</p>
             <button class="start-btn" onclick="startExperience()">Abrir Sorpresa ✨</button>
         </div>
     </div>
@@ -455,6 +426,13 @@
         const bgMusic = document.getElementById('bgMusic');
 
         function startExperience() {
+            // Intentar forzar la pantalla horizontal de manera automática en el celular
+            if (screen.orientation && screen.orientation.lock) {
+                screen.orientation.lock('landscape').catch(() => {
+                    // Si el navegador del celular bloquea el giro automático por seguridad, el usuario solo gira su cel.
+                });
+            }
+
             const overlay = document.getElementById('welcomeOverlay');
             overlay.style.opacity = '0';
             setTimeout(() => {
