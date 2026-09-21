@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feliz Día de las Flores Amarillas Amor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #000003;
+            touch-action: none;
+            cursor: grab;
+        }
+
+        body:active {
+            cursor: grabbing;
+        }
+
+        /* Pantalla de inicio para desbloquear la música con un toque */
+        #welcomeOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 5, 0.92);
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+            transition: opacity 0.8s ease;
+        }
+
+        .welcome-card {
+            background: rgba(25, 22, 10, 0.95);
+            border: 2px solid #ffe600;
+            padding: 35px 25px;
+            border-radius: 25px;
+            text-align: center;
+            color: #fffacd;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            box-shadow: 0 0 40px rgba(255, 230, 0, 0.6);
+            max-width: 350px;
+            width: 90%;
+        }
+
+        .welcome-card h2 {
+            color: #ffe600;
+            margin-bottom: 12px;
+            font-size: 1.5rem;
+        }
+
+        .welcome-card p {
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin-bottom: 25px;
+            color: #ffecf2;
+        }
+
+        .start-btn {
+            background: linear-gradient(135deg, #ff77a9, #ffe600);
+            color: #111;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 30px;
+            font-size: 1.05rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(255, 119, 169, 0.8);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .start-btn:hover {
+            transform: scale(1.08);
+            box-shadow: 0 0 30px rgba(255, 230, 0, 1);
+        }
+
+        #webgl-container {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 2;
+            pointer-events: none; 
+        }
+
+        #spaceCanvas {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+            display: block;
+            pointer-events: auto;
+        }
+
+        #bgVideo {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 1px;
+            height: 1px;
+            opacity: 0.01;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .main-title {
+            position: absolute;
+            top: 30px;
+            width: 100%;
+            text-align: center;
+            z-index: 10;
+            color: #ffe600;
+            font-size: 1.7rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-shadow: 0 0 15px rgba(255, 230, 0, 0.7), 0 0 30px rgba(255, 215, 0, 0.4);
+            pointer-events: none;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 0 20px;
+        }
+
+        .corner-group {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 8px;
+            z-index: 15;
+            pointer-events: none;
+        }
+
+        .corner-bear {
+            width: 105px;
+            height: auto;
+            filter: drop-shadow(0 0 12px rgba(255, 215, 0, 0.5));
+            animation: floatBear 3s ease-in-out infinite;
+        }
+
+        @keyframes floatBear {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-6px) rotate(2deg); }
+        }
+
+        .floating-bouquet {
+            position: absolute;
+            width: 75px;
+            height: auto;
+            z-index: 5;
+            pointer-events: none;
+            filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.6));
+            animation: floatBubble 8s ease-in-out infinite alternate;
+        }
+
+        .bouquet-1 { top: 28%; left: 5%; animation-duration: 9s; }
+        .bouquet-2 { top: 72%; left: 8%; animation-duration: 7s; }
+        .bouquet-3 { top: 26%; right: 5%; animation-duration: 10s; }
+        .bouquet-5 { top: 50%; left: 4%; animation-duration: 9.5s; }
+        .bouquet-6 { top: 50%; right: 4%; animation-duration: 7.5s; }
+        .bouquet-7 { top: 38%; left: 22%; animation-duration: 8s; }
+        .bouquet-8 { top: 38%; right: 22%; animation-duration: 8.5s; }
+        .bouquet-9 { top: 62%; left: 24%; animation-duration: 9s; }
+        .bouquet-10 { top: 62%; right: 24%; animation-duration: 7.8s; }
+
+        @keyframes floatBubble {
+            0% { transform: translate(0, 0) scale(1) rotate(0deg); }
+            50% { transform: translate(15px, -25px) scale(1.05) rotate(5deg); }
+            100% { transform: translate(-15px, 20px) scale(0.95) rotate(-5deg); }
+        }
+
+        .poetry-container {
+            position: absolute;
+            top: 72%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 20;
+            display: none;
+            text-align: center;
+            pointer-events: auto;
+            animation: fadeInPoetry 1.5s ease forwards;
+        }
+
+        @keyframes fadeInPoetry {
+            from { opacity: 0; transform: translate(-50%, -40%); }
+            to { opacity: 1; transform: translate(-50%, -50%); }
+        }
+
+        .poetry-btn {
+            background: linear-gradient(135deg, #ff77a9, #ffe600);
+            color: #111;
+            border: none;
+            padding: 13px 26px;
+            border-radius: 35px;
+            font-size: 1.05rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 0 25px rgba(255, 119, 169, 0.8);
+            transition: transform 0.3s, box-shadow 0.3s;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .poetry-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 35px rgba(255, 230, 0, 1);
+        }
+
+        .cards-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 12;
+            pointer-events: none;
+        }
+
+        .love-envelope {
+            position: absolute;
+            width: 135px;
+            padding: 9px;
+            background: rgba(30, 25, 5, 0.85);
+            border: 2px solid #ffe600;
+            border-radius: 12px;
+            color: #fffacd;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 0.82rem;
+            font-weight: bold;
+            text-align: center;
+            box-shadow: 0 0 15px rgba(255, 230, 0, 0.3);
+            cursor: pointer;
+            pointer-events: auto;
+            backdrop-filter: blur(6px);
+            transition: all 0.3s ease;
+            animation: bubbleFloat 7s ease-in-out infinite alternate;
+        }
+
+        .love-envelope:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 25px rgba(255, 230, 0, 0.8);
+            background: rgba(50, 40, 10, 0.95);
+        }
+
+        .love-envelope.opened {
+            background: rgba(50, 20, 35, 0.85);
+            border-color: #ff77a9;
+            color: #ffecf2;
+            box-shadow: 0 0 18px rgba(255, 119, 169, 0.6);
+        }
+
+        .env-1 { top: 22%; left: 14%; animation-duration: 8s; animation-delay: 0s; }
+        .env-2 { top: 48%; left: 11%; animation-duration: 9s; animation-delay: 1.5s; }
+        .env-3 { top: 76%; left: 14%; animation-duration: 7s; animation-delay: 1s; }
+        .env-4 { top: 22%; right: 14%; animation-duration: 8.5s; animation-delay: 0.5s; }
+        .env-5 { top: 48%; right: 11%; animation-duration: 9.5s; animation-delay: 2s; }
+        .env-6 { top: 76%; right: 14%; animation-duration: 7.5s; animation-delay: 1.2s; }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(8px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: rgba(25, 22, 10, 0.95);
+            border: 2px solid #ffe600;
+            padding: 28px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 420px;
+            text-align: center;
+            color: #fffacd;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            box-shadow: 0 0 30px rgba(255, 230, 0, 0.5);
+            transform: scale(0.8);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-content h3 {
+            color: #ffe600;
+            margin-bottom: 14px;
+            font-size: 1.35rem;
+        }
+
+        .modal-content p {
+            font-size: 0.98rem;
+            line-height: 1.6;
+            margin-bottom: 22px;
+            white-space: pre-line;
+            text-align: left;
+        }
+
+        .modal-btn {
+            background: #ffe600;
+            color: #111;
+            border: none;
+            padding: 9px 24px;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s;
+        }
+
+        .modal-btn:hover {
+            background: #ffcc00;
+            transform: scale(1.05);
+        }
+
+        .tutorial-hint {
+            position: absolute;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #b0c4de;
+            padding: 7px 16px;
+            border-radius: 30px;
+            font-family: sans-serif;
+            font-size: 0.78rem;
+            letter-spacing: 0.5px;
+            backdrop-filter: blur(8px);
+            pointer-events: none;
+            transition: opacity 0.6s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .tutorial-hint.fade-out {
+            opacity: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Pantalla Inicial para asegurar que la música empiece a sonar -->
+    <div id="welcomeOverlay">
+        <div class="welcome-card">
+            <h2>Hola, Mi Amor 🌻💛</h2>
+            <p>Entra a tu sorpresa y que empiece a sonar nuestra canción.</p>
+            <button class="start-btn" onclick="startExperience()">Abrir Sorpresa ✨</button>
+        </div>
+    </div>
+
+    <div class="main-title">Feliz día de flores amarillas amor 🌻💛</div>
+
+    <div class="corner-group">
+        <img src="oso.png" alt="Osito" class="corner-bear">
+    </div>
+
+    <img src="Gir1.png" alt="Ramo" class="floating-bouquet bouquet-1">
+    <img src="Gir1.png" alt="Ramo" class="floating-bouquet bouquet-2">
+    <img src="Gir1.png" alt="Ramo" class="floating-bouquet bouquet-3">
+    <img src="Gir1.png" alt="Ramo" class="floating-bouquet bouquet-5">
+    <img src="Gir1.png" alt="Ramo" class="floating-bouquet bouquet-6">
+    <img src="Gir1.png" alt="Ramo" class="floating-bouquet bouquet-7">
+    <img src="Gir1.png" alt="Ramo" class="floating-bouquet bouquet-8">
+    <img src="Gir1.png" alt="Ramo" class="floating-bouquet bouquet-9">
+    <img src="Gir1.png" alt="Ramo" class="floating-bouquet bouquet-10">
+
+    <div class="poetry-container" id="poetryContainer">
+        <button class="poetry-btn" onclick="openPoetry()">Es para ti mi amor 💖</button>
+    </div>
+
+    <div class="cards-container">
+        <div class="love-envelope env-1" id="env-1" onclick="openCard(1)">💌 Tus Ojos</div>
+        <div class="love-envelope env-2" id="env-2" onclick="openCard(2)">💌 Tus Labios</div>
+        <div class="love-envelope env-3" id="env-3" onclick="openCard(3)">💌 Tu Carácter</div>
+        <div class="love-envelope env-4" id="env-4" onclick="openCard(4)">💌 Cada Detalle</div>
+        <div class="love-envelope env-5" id="env-5" onclick="openCard(5)">💌 Día a Día</div>
+        <div class="love-envelope env-6" id="env-6" onclick="openCard(6)">💌 Mi Todo</div>
+    </div>
+
+    <div class="modal-overlay" id="cardModal">
+        <div class="modal-content">
+            <h3 id="modalTitle">Título de la Carta</h3>
+            <p id="modalText">Contenido de la carta...</p>
+            <button class="modal-btn" onclick="closeModal()">Cerrar ✖</button>
+        </div>
+    </div>
+
+    <div class="tutorial-hint" id="tutorialHint">Desliza para girar el espacio • Toca los sobres</div>
+
+    <video id="bgVideo" src="amarte.MP4" loop playsinline></video>
+
+    <canvas id="spaceCanvas"></canvas>
+    <div id="webgl-container"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <script>
+        const bgVideo = document.getElementById('bgVideo');
+
+        function startExperience() {
+            bgVideo.volume = 1.0;
+            bgVideo.muted = false;
+            bgVideo.play().then(() => {
+                const overlay = document.getElementById('welcomeOverlay');
+                overlay.style.opacity = '0';
+                setTimeout(() => {
+                    overlay.remove();
+                }, 800);
+            }).catch(err => {
+                console.log("Error al reproducir audio:", err);
+            });
+        }
+
+        const lettersData = {
+            1: {
+                title: "Tus Hermosos Ojos ✨",
+                text: "Me pierdo en tu mirada todos los días; tienen un brillo único que ilumina mi universo entero y me transmite una paz inmensa."
+            },
+            2: {
+                title: "Tus Tiernos Labios 💋",
+                text: "Cada sonrisa tuya es mi lugar favorito y cada beso tuyo es lo que más anhelo y disfruto en esta vida."
+            },
+            3: {
+                title: "Tu Carácter Maravilloso 💖",
+                text: "Me gusta demasiado tu forma de ser, tu nobleza y cómo eres tú misma. Amo cada parte de tu personalidad que me hace enamorarme más de ti."
+            },
+            4: {
+                title: "Cada Pequeño Detalle 🌸",
+                text: "Me enamoras con tu risa, tus ocurrencias y la manera tan hermosa en que demuestras tu cariño todos los días."
+            },
+            5: {
+                title: "Me Enamoras Más Cada Día 💫",
+                text: "No hay un solo instante en el que no piense en ti; mi amor por ti crece, se fortalece y se renueva sin medida."
+            },
+            6: {
+                title: "Eres Mi Todo 🌻",
+                text: "Eres mi casualidad más bonita y el regalo más hermoso que la vida pudo haberme dado. Te amo con todo mi corazón."
+            },
+            poetry: {
+                title: "Para el amor de mi vida 🌻💛",
+                text: "Mi amor, sé que hoy por la distancia que hay entre nosotros no puedo entregarte en persona unas flores amarillas como te mereces, y de verdad te pido perdón si a veces la distancia nos pone pruebas difíciles.\n\nQuiero que sepas que me gustas demasiado, amo tu forma de ser por completo. No quiero separarme de ti nunca, mi sueño más grande es llegar a un futuro a tu lado, que te cases conmigo, formar una hermosa familia juntos y estar siempre unidos.\n\nTe amo con todas mis fuerzas, eres y serás siempre mi persona favorita. Te amo mucho muchote Alejandra 💛"
+            }
+        };
+
+        let openedCards = new Set();
+        let explosionTriggered = false;
+
+        function openCard(id) {
+            document.getElementById('modalTitle').innerText = lettersData[id].title;
+            document.getElementById('modalText').innerText = lettersData[id].text;
+            document.getElementById('cardModal').classList.add('active');
+
+            const envelope = document.getElementById(`env-${id}`);
+            envelope.classList.add('opened');
+            envelope.innerHTML = "💖 Abierta";
+
+            openedCards.add(id);
+
+            if (openedCards.size === 6 && !explosionTriggered) {
+                explosionTriggered = true;
+                triggerSpaceExplosion();
+                document.getElementById('poetryContainer').style.display = 'block';
+            }
+        }
+
+        function openPoetry() {
+            document.getElementById('modalTitle').innerText = lettersData['poetry'].title;
+            document.getElementById('modalText').innerText = lettersData['poetry'].text;
+            document.getElementById('cardModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('cardModal').classList.remove('active');
+        }
+
+        let extraExplosionStars = [];
+        let moonExplosionEffect = false;
+
+        function triggerSpaceExplosion() {
+            moonExplosionEffect = true;
+            const multiColors = ['#ff77a9', '#33ccff', '#ffee55', '#ff44aa', '#88ffff', '#ffffff', '#ffbb00'];
+            for (let i = 0; i < 400; i++) {
+                extraExplosionStars.push({
+                    x: (Math.random() - 0.5) * window.innerWidth * 3,
+                    y: (Math.random() - 0.5) * window.innerHeight * 3,
+                    z: (Math.random() - 0.5) * 1000,
+                    size: Math.random() * 3 + 1,
+                    color: multiColors[Math.floor(Math.random() * multiColors.length)],
+                    alphaSpeed: Math.random() * 0.1 + 0.05,
+                    alphaOffset: Math.random() * Math.PI * 2
+                });
+            }
+        }
+
+        const canvas = document.getElementById('spaceCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let width, height;
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        let stars = [];
+        const numStars = 600;
+
+        let rotX = 0;
+        let rotY = 0;
+        let targetRotX = 0;
+        let targetRotY = 0;
+        let zoom = 180; 
+        const targetZoom = 380; 
+
+        let isDragging = false;
+        let startX = 0, startY = 0;
+        let hasInteracted = false;
+
+        const starColors = ['#ffffff', '#fffcd1', '#fff056', '#ffe135', '#ffcc00'];
+
+        function initStars() {
+            stars = [];
+            for (let i = 0; i < numStars; i++) {
+                stars.push({
+                    x: (Math.random() - 0.5) * width * 5,
+                    y: (Math.random() - 0.5) * height * 5,
+                    z: (Math.random() - 0.5) * width * 5,
+                    size: Math.random() * 2.5 + 1.0,
+                    color: starColors[Math.floor(Math.random() * starColors.length)],
+                    alphaSpeed: Math.random() * 0.06 + 0.03,
+                    alphaOffset: Math.random() * Math.PI * 2
+                });
+            }
+        }
+        initStars();
+
+        function hideTutorial() {
+            if (!hasInteracted) {
+                hasInteracted = true;
+                const hint = document.getElementById('tutorialHint');
+                if (hint) {
+                    hint.classList.add('fade-out');
+                    setTimeout(() => hint.remove(), 600);
+                }
+            }
+        }
+
+        function onPointerDown(e) {
+            if (e.touches && e.touches.length > 1) return;
+            isDragging = true;
+            startX = e.clientX || (e.touches && e.touches[0].clientX);
+            startY = e.clientY || (e.touches && e.touches[0].clientY);
+            hideTutorial();
+        }
+
+        function onPointerMove(e) {
+            if (!isDragging) return;
+            const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+            const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+            if (!clientX || !clientY) return;
+
+            const deltaX = clientX - startX;
+            const deltaY = clientY - startY;
+
+            targetRotY += deltaX * 0.004;
+            targetRotX -= deltaY * 0.004;
+
+            startX = clientX;
+            startY = clientY;
+        }
+
+        function onPointerUp() {
+            isDragging = false;
+        }
+
+        window.addEventListener('mousedown', onPointerDown);
+        window.addEventListener('mousemove', onPointerMove);
+        window.addEventListener('mouseup', onPointerUp);
+
+        window.addEventListener('touchstart', onPointerDown, { passive: true });
+        window.addEventListener('touchmove', onPointerMove, { passive: true });
+        window.addEventListener('touchend', onPointerUp);
+
+        const container = document.getElementById('webgl-container');
+        const scene = new THREE.Scene();
+
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(0, 0, 8.5);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        container.appendChild(renderer.domElement);
+
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+        scene.add(ambientLight);
+
+        const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
+        dirLight.position.set(5, 3, 5);
+        scene.add(dirLight);
+
+        const moonGroup = new THREE.Group();
+        scene.add(moonGroup);
+
+        const textureLoader = new THREE.TextureLoader();
+        const moonTexture = textureLoader.load('https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/planets/moon_1024.jpg');
+        
+        const moonGeometry = new THREE.SphereGeometry(0.45, 48, 48); 
+        const moonMaterial = new THREE.MeshStandardMaterial({
+            map: moonTexture,
+            roughness: 0.85,
+            metalness: 0.05
+        });
+
+        const moon = new THREE.Mesh(moonGeometry, moonMaterial);
+        moonGroup.add(moon);
+
+        const innerParticlesGeo = new THREE.BufferGeometry();
+        const particleCount = 300;
+        const posArray = new Float32Array(particleCount * 3);
+        for(let i=0; i<particleCount*3; i++) {
+            posArray[i] = (Math.random() - 0.5) * 0.8;
+        }
+        innerParticlesGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+        const innerParticlesMat = new THREE.PointsMaterial({
+            size: 0.03,
+            color: 0xff77a9,
+            transparent: true,
+            opacity: 0,
+            blending: THREE.AdditiveBlending
+        });
+        const innerParticles = new THREE.Points(innerParticlesGeo, innerParticlesMat);
+        moonGroup.add(innerParticles);
+
+        const glowGeometry = new THREE.SphereGeometry(0.52, 32, 32);
+        const glowMaterial = new THREE.ShaderMaterial({
+            uniforms: {
+                c: { type: "f", value: 0.3 },
+                p: { type: "f", value: 4.0 },
+                glowColor: { type: "c", value: new THREE.Color(0x3399ff) },
+                viewVector: { type: "v3", value: camera.position }
+            },
+            vertexShader: `
+                uniform vec3 viewVector;
+                uniform float c;
+                uniform float p;
+                varying float intensity;
+                void main() {
+                    vec3 vNormal = normalize(normalMatrix * normal);
+                    vec3 vNormel = normalize(normalMatrix * viewVector);
+                    intensity = pow(c - dot(vNormal, vNormel), p);
+                    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                }
+            `,
+            fragmentShader: `
+                varying float intensity;
+                uniform vec3 glowColor;
+                void main() {
+                    vec3 glow = glowColor * intensity * 2.5;
+                    gl_FragColor = vec4(glow, intensity * 0.9);
+                }
+            `,
+            side: THREE.BackSide,
+            blending: THREE.AdditiveBlending,
+            transparent: true
+        });
+
+        const glowMesh = new THREE.Mesh(glowGeometry, glowMaterial);
+        scene.add(glowMesh); 
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            resize();
+        });
+
+        let time = 0;
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            moonGroup.rotation.y += 0.0015;
+
+            if (moonExplosionEffect) {
+                if (innerParticlesMat.opacity < 0.9) innerParticlesMat.opacity += 0.01;
+                glowMaterial.uniforms.glowColor.value.lerp(new THREE.Color(0xff55cc), 0.02);
+            }
+
+            ctx.fillStyle = '#000003';
+            ctx.fillRect(0, 0, width, height);
+
+            time += 0.04;
+
+            if (!isDragging) {
+                targetRotY += 0.0008;
+            }
+            rotX += (targetRotX - rotX) * 0.05;
+            rotY += (targetRotY - rotY) * 0.05;
+            
+            zoom += (targetZoom - zoom) * 0.04;
+
+            const cosX = Math.cos(rotX);
+            const sinX = Math.sin(rotX);
+            const cosY = Math.cos(rotY);
+            const sinY = Math.sin(rotY);
+
+            const centerX = width / 2;
+            const centerY = height / 2;
+
+            let allStarsToRender = stars.concat(extraExplosionStars);
+            for (let i = 0; i < allStarsToRender.length; i++) {
+                let star = allStarsToRender[i];
+
+                let x1 = star.x * cosY - star.z * sinY;
+                let z1 = star.z * cosY + star.x * sinY;
+                
+                let y2 = star.y * cosX - z1 * sinX;
+                let z2 = z1 * cosX + star.y * sinX;
+
+                let adjustedZ = z2 + width / 1.2;
+                if (adjustedZ < 10) adjustedZ += width * 2;
+
+                const k = zoom / adjustedZ;
+                const px = x1 * k + centerX;
+                const py = y2 * k + centerY;
+
+                if (px >= 0 && px <= width && py >= 0 && py <= height) {
+                    const alpha = Math.min(1.0, Math.max(0.5, (Math.sin(time * star.alphaSpeed * 10 + star.alphaOffset) + 1) * 0.85));
+                    const currentSize = Math.max(0.8, star.size * k * 0.95);
+
+                    ctx.globalAlpha = alpha;
+                    ctx.fillStyle = star.color;
+                    ctx.shadowBlur = 12;
+                    ctx.shadowColor = star.color;
+
+                    ctx.beginPath();
+                    ctx.arc(px, py, currentSize, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.shadowBlur = 0;
+                }
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        animate();
+    </script>
+</html>
