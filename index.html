@@ -25,14 +25,14 @@
             cursor: grabbing;
         }
 
-        /* Pantalla de inicio para desbloquear la música con un toque */
+        /* Pantalla de inicio para desbloquear el audio limpiamente */
         #welcomeOverlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 5, 0.92);
+            background: rgba(0, 0, 5, 0.95);
             backdrop-filter: blur(10px);
             display: flex;
             flex-direction: column;
@@ -105,17 +105,6 @@
             z-index: 1;
             display: block;
             pointer-events: auto;
-        }
-
-        #bgVideo {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 1px;
-            height: 1px;
-            opacity: 0.01;
-            z-index: -1;
-            pointer-events: none;
         }
 
         .main-title {
@@ -368,14 +357,17 @@
 </head>
 <body>
 
-    <!-- Pantalla Inicial para asegurar que la música empiece a sonar -->
+    <!-- Pantalla Inicial para desbloquear el audio al hacer clic -->
     <div id="welcomeOverlay">
         <div class="welcome-card">
             <h2>Hola, Mi Amor 🌻💛</h2>
-            <p>Entra a tu sorpresa y que empiece a sonar nuestra canción.</p>
+            <p>Toca el botón para abrir tu sorpresa y comenzar la música.</p>
             <button class="start-btn" onclick="startExperience()">Abrir Sorpresa ✨</button>
         </div>
     </div>
+
+    <!-- Etiqueta de audio corregida a minúsculas para servidores web -->
+    <audio id="bgMusic" src="amarte.mp4" preload="auto" loop></audio>
 
     <div class="main-title">Feliz día de flores amarillas amor 🌻💛</div>
 
@@ -416,36 +408,27 @@
 
     <div class="tutorial-hint" id="tutorialHint">Desliza para girar el espacio • Toca los sobres</div>
 
-    <video id="bgVideo" src="amarte.MP4" loop playsinline preload="auto"></video>
-
     <canvas id="spaceCanvas"></canvas>
     <div id="webgl-container"></div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
     <script>
-        const bgVideo = document.getElementById('bgVideo');
+        const bgMusic = document.getElementById('bgMusic');
 
         function startExperience() {
-            // Se oculta la pantalla de bienvenida al instante para dar respuesta inmediata
             const overlay = document.getElementById('welcomeOverlay');
             overlay.style.opacity = '0';
             setTimeout(() => {
                 overlay.remove();
             }, 800);
 
-            // Forzar reproducción de la música
-            bgVideo.muted = false;
-            bgVideo.volume = 1.0;
-            let playPromise = bgVideo.play();
-            
-            if (playPromise !== undefined) {
-                playPromise.then(_ => {
-                    // Reproducción iniciada con éxito
-                }).catch(error => {
-                    console.log("Reproducción automática limitada por el navegador:", error);
-                });
-            }
+            bgMusic.volume = 1.0;
+            bgMusic.play().then(() => {
+                console.log("Audio reproduciéndose correctamente");
+            }).catch((error) => {
+                console.log("Error de reproducción:", error);
+            });
         }
 
         const lettersData = {
