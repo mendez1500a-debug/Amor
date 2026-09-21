@@ -416,7 +416,7 @@
 
     <div class="tutorial-hint" id="tutorialHint">Desliza para girar el espacio • Toca los sobres</div>
 
-    <video id="bgVideo" src="amarte.MP4" loop playsinline></video>
+    <video id="bgVideo" src="amarte.MP4" loop playsinline preload="auto"></video>
 
     <canvas id="spaceCanvas"></canvas>
     <div id="webgl-container"></div>
@@ -427,19 +427,25 @@
         const bgVideo = document.getElementById('bgVideo');
 
         function startExperience() {
-            // Se oculta la pantalla de inmediato al hacer clic para dar respuesta instantánea
+            // Se oculta la pantalla de bienvenida al instante para dar respuesta inmediata
             const overlay = document.getElementById('welcomeOverlay');
             overlay.style.opacity = '0';
             setTimeout(() => {
                 overlay.remove();
             }, 800);
 
-            // Reproducción en segundo plano del video/audio
-            bgVideo.volume = 1.0;
+            // Forzar reproducción de la música
             bgVideo.muted = false;
-            bgVideo.play().catch(err => {
-                console.log("Reproducción automática limitada por el navegador:", err);
-            });
+            bgVideo.volume = 1.0;
+            let playPromise = bgVideo.play();
+            
+            if (playPromise !== undefined) {
+                playPromise.then(_ => {
+                    // Reproducción iniciada con éxito
+                }).catch(error => {
+                    console.log("Reproducción automática limitada por el navegador:", error);
+                });
+            }
         }
 
         const lettersData = {
