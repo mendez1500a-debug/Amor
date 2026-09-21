@@ -147,7 +147,6 @@
             50% { transform: translateY(-6px) rotate(2deg); }
         }
 
-        /* --- RAMOS RESPONSIVOS --- */
         .floating-bouquet {
             position: absolute;
             width: 45px;
@@ -164,27 +163,15 @@
             100% { transform: translate(-4px, 8px) scale(0.97) rotate(-3deg); }
         }
 
-        /* Posiciones por defecto (Vertical / Retrato) para que no se junten */
-        .bouquet-1 { top: 25%; left: 18%; }
-        .bouquet-2 { top: 40%; left: 8%; }
-        .bouquet-3 { top: 62%; left: 10%; }
-        .bouquet-5 { top: 25%; right: 18%; }
-        .bouquet-6 { top: 40%; right: 8%; }
-        .bouquet-7 { top: 62%; right: 10%; }
-        .bouquet-8 { top: 50%; left: 3%; }
-        .bouquet-9 { top: 50%; right: 3%; }
-
-        /* Si el celular se pone en HORIZONTAL, aplicamos las posiciones originales que te encantan */
-        @media (min-aspect-ratio: 4/3) {
-            .bouquet-1 { top: 35%; left: 30%; }
-            .bouquet-2 { top: 48%; left: 16%; }
-            .bouquet-3 { top: 62%; left: 17%; }
-            .bouquet-5 { top: 35%; right: 30%; }
-            .bouquet-6 { top: 48%; right: 16%; }
-            .bouquet-7 { top: 62%; right: 17%; }
-            .bouquet-8 { top: 48%; left: 6%; }
-            .bouquet-9 { top: 48%; right: 6%; }
-        }
+        /* Tus posiciones originales exactas en horizontal */
+        .bouquet-1 { top: 35%; left: 30%; }
+        .bouquet-2 { top: 48%; left: 16%; }
+        .bouquet-3 { top: 62%; left: 17%; }
+        .bouquet-5 { top: 35%; right: 30%; }
+        .bouquet-6 { top: 48%; right: 16%; }
+        .bouquet-7 { top: 62%; right: 17%; }
+        .bouquet-8 { top: 48%; left: 6%; }
+        .bouquet-9 { top: 48%; right: 6%; }
 
         .poetry-container {
             position: absolute;
@@ -232,7 +219,6 @@
             pointer-events: none;
         }
 
-        /* --- SOBRES RESPONSIVOS --- */
         .love-envelope {
             position: absolute;
             width: 95px;
@@ -253,23 +239,13 @@
             animation: bubbleFloat 7s ease-in-out infinite alternate;
         }
 
-        /* Posiciones por defecto (Vertical / Retrato) separadas para que no se encimen */
-        .env-1 { top: 22%; left: 32%; }
-        .env-2 { top: 48%; left: 18%; }
-        .env-3 { top: 73%; left: 30%; }
-        .env-4 { top: 22%; right: 32%; }
-        .env-5 { top: 48%; right: 18%; }
-        .env-6 { top: 73%; right: 30%; }
-
-        /* Si el celular está en HORIZONTAL, regresan a tu diseño exacto */
-        @media (min-aspect-ratio: 4/3) {
-            .env-1 { top: 35%; left: 40%; }
-            .env-2 { top: 57%; left: 30%; }
-            .env-3 { top: 76%; left: 42%; }
-            .env-4 { top: 35%; right: 40%; }
-            .env-5 { top: 57%; right: 30%; }
-            .env-6 { top: 76%; right: 42%; }
-        }
+        /* Tus posiciones originales exactas para los sobres */
+        .env-1 { top: 35%; left: 40%; }
+        .env-2 { top: 57%; left: 30%; }
+        .env-3 { top: 76%; left: 42%; }
+        .env-4 { top: 35%; right: 40%; }
+        .env-5 { top: 57%; right: 30%; }
+        .env-6 { top: 76%; right: 42%; }
 
         .love-envelope:hover {
             transform: scale(1.1);
@@ -450,6 +426,14 @@
         const bgMusic = document.getElementById('bgMusic');
 
         function startExperience() {
+            // Forzar pantalla completa y orientación horizontal al hacer clic
+            const docElem = document.documentElement;
+            if (docElem.requestFullscreen) {
+                docElem.requestFullscreen().catch(() => {});
+            } else if (docElem.webkitRequestFullscreen) {
+                docElem.webkitRequestFullscreen();
+            }
+
             if (screen.orientation && screen.orientation.lock) {
                 screen.orientation.lock('landscape').catch(() => {});
             }
